@@ -119,3 +119,87 @@ select nombre from producto where nombre LIKE '%Monitor%' AND precio < 215;
 --  36. Lista los productos con un precio mayor o igual a 180€, ordenado por precio descendente y luego por nombre ascendente:
 select nombre, precio from producto where precio >= 180 ORDER BY precio DESC, nombre ASC;
 
+
+-- ************************
+-- * CONSULTAS MULTITABLA *
+--*************************
+
+-- 1. Devuelve el nombre del producto, precio y nombre de fabricante de todos los productos
+select p.nombre AS producto, p.precio, f.nombre AS fabricante
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo;
+
+-- 2. Devuelve el nombre del producto, precio y nombre de fabricante de todos los productos, ordenado por fabricante
+select p.nombre AS producto, p.precio, f.nombre AS fabricante
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+ORDER BY f.nombre;
+
+-- 3. Devuelve el identificador del producto, nombre del producto, identificador del fabricante y nombre del fabricante
+select p.codigo AS producto_id, p.nombre AS producto, f.codigo AS fabricante_id, f.nombre AS fabricante
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo;
+
+-- 4. Devuelve el nombre del producto, su precio y el nombre de su fabricante del producto más barato
+select p.nombre AS producto, p.precio, f.nombre AS fabricante
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+ORDER BY p.precio ASC
+LIMIT 1;
+
+-- 5. Devuelve el nombre del producto, su precio y el nombre de su fabricante del producto más caro
+select p.nombre AS producto, p.precio, f.nombre AS fabricante
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+ORDER BY p.precio DESC
+LIMIT 1;
+
+-- 6. Devuelve una lista de todos los productos del fabricante Lenovo
+select p.nombre AS producto, p.precio
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+where f.nombre = 'Lenovo';
+
+-- 7. Devuelve una lista de todos los productos del fabricante Crucial que tengan un precio mayor que 200€
+select p.nombre AS producto, p.precio
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+where f.nombre = 'Crucial' AND p.precio > 200;
+
+-- 8. Devuelve todos los productos de los fabricantes Asus, Hewlett-Packard y Seagate sin utilizar el operador IN
+select p.nombre AS producto, p.precio
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+where f.nombre = 'Asus' OR f.nombre = 'Hewlett-Packard' OR f.nombre = 'Seagate';
+
+-- 9. Devuelve todos los productos de los fabricantes Asus, Hewlett-Packard y Seagate utilizando el operador IN
+select p.nombre AS producto, p.precio
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+where f.nombre IN ('Asus', 'Hewlett-Packard', 'Seagate');
+
+-- 10. Devuelve el nombre y el precio de todos los productos de los fabricantes cuyo nombre termine con la vocal e
+select p.nombre AS producto, p.precio
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+where f.nombre LIKE '%e';
+
+-- 11. Devuelve el nombre y el precio de todos los productos cuyo nombre de fabricante contenga el carácter w
+select p.nombre AS producto, p.precio
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+where f.nombre LIKE '%w%';
+
+-- 12. Devuelve el nombre de producto, precio y nombre de fabricante de todos los productos que tengan un precio mayor o igual a 180€
+-- Ordenado por precio (descendente) y por nombre (ascendente)
+select p.nombre AS producto, p.precio, f.nombre AS fabricante
+from producto p
+join fabricante f ON p.codigo_fabricante = f.codigo
+where p.precio >= 180
+ORDER BY p.precio DESC, p.nombre ASC;
+
+-- 13. Devuelve el identificador y nombre de fabricante de aquellos fabricantes que tienen productos asociados
+select f.codigo AS fabricante_id, f.nombre AS fabricante
+from fabricante f
+join producto p ON f.codigo = p.codigo_fabricante
+GROUP BY f.codigo, f.nombre;
