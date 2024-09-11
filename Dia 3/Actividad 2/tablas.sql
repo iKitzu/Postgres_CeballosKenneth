@@ -1,63 +1,77 @@
--- Deshabilitar temporalmente la verificación de claves foráneas
-SET session_replication_role = 'replica';
+-- Crear tipos ENUM
+-- CREATE TYPE sexo AS ENUM ('H', 'M');
+-- CREATE TYPE tipo_asignatura3 AS ENUM ('básica', 'obligatoria', 'optativa');
 
--- Tabla 'departamento'
-CREATE TABLE IF NOT EXISTS departamento (
+-- Crear tabla departamento
+CREATE TABLE departamento (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL
 );
 
--- Tabla 'grado'
-CREATE TABLE IF NOT EXISTS grado (
+-- Crear tabla persona
+CREATE TABLE alumno (
+    id SERIAL PRIMARY KEY,
+    nif VARCHAR(9),
+    nombre VARCHAR(25) NOT NULL,
+    apellido1 VARCHAR(50) NOT NULL,
+    apellido2 VARCHAR(50),
+    ciudad VARCHAR(25) NOT NULL,
+    direccion VARCHAR(50) NOT NULL,
+    telefono VARCHAR(9),
+    fecha_nacimiento DATE NOT NULL,
+    sexo sexo NOT NULL
+);
+
+-- Crear la tabla de profesor
+CREATE TABLE profesor (
+    id_profesor SERIAL PRIMARY KEY,
+    nif varchar(25),
+    nombre varchar(25) NOT NULL,
+    apellido1 varchar(50) NOT NULL,
+    apellido2 varchar(50),
+    ciudad varchar(25) NOT NULL,
+    direccion varchar(50) NOT null	,
+    telefono varchar(9),
+    fecha_nacimiento date NOT NULL,
+    sexo sexo  NOT NULL,
+    id_departamento INT NOT NULL,
+    FOREIGN KEY (id_departamento) REFERENCES departamento(id)
+);
+
+-- Crear tabla grado
+CREATE TABLE grado (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL
 );
 
--- Tabla 'curso_escolar'
-CREATE TABLE IF NOT EXISTS curso_escolar (
+-- Crear tabla curso escolar
+CREATE TABLE curso_escolar (
     id SERIAL PRIMARY KEY,
-    anyo_inicio INT NOT NULL,
-    anyo_fin INT NOT NULL
+    anyo_inicio INTEGER NOT NULL,
+    anyo_fin INTEGER NOT NULL
 );
 
--- Tabla 'profesor'
-CREATE TABLE IF NOT EXISTS profesor (
-    id SERIAL PRIMARY KEY,
-    nif VARCHAR(9) NOT NULL,
-    nombre VARCHAR(25) NOT NULL,
-    apellido1 VARCHAR(50) NOT NULL,
-    apellido2 VARCHAR(50),
-    ciudad VARCHAR(25),
-    direccion VARCHAR(50),
-    telefono VARCHAR(9),
-    fecha_nacimiento DATE,
-    sexo CHAR(1) CHECK (sexo IN ('H', 'M')),
-    id_departamento INT,
-    CONSTRAINT fk_profesor_departamento FOREIGN KEY (id_departamento) 
-        REFERENCES departamento(id)
-);
-
--- Tabla 'asignatura'
-CREATE TABLE IF NOT EXISTS asignatura (
+-- Crear tabla asignatura
+CREATE TABLE asignatura (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     creditos FLOAT NOT NULL,
-    tipo CHAR(1) CHECK (tipo IN ('O', 'E', 'B')), -- O: Obligatoria, E: Electiva, B: Básica
-    curso TINYINT NOT NULL,
-    cuatrimestre TINYINT NOT NULL,
+    tipo tipo_asignatura3 NOT NULL,
+    curso SMALLINT NOT NULL,
+    cuatrimestre SMALLINT NOT NULL,
     id_profesor INT,
-    id_grado INT,
-    CONSTRAINT fk_asignatura_profesor FOREIGN KEY (id_profesor) 
-        REFERENCES profesor(id),
-    CONSTRAINT fk_asignatura_grado FOREIGN KEY (id_grado) 
-        REFERENCES grado(id)
+    id_grado INT NOT NULL,
+    FOREIGN KEY (id_profesor) REFERENCES profesor(id_profesor),
+    FOREIGN KEY (id_grado) REFERENCES grado(id)
 );
 
--- Tabla 'alumno'
-CREATE TABLE IF NOT EXISTS alumno (
-    id SERIAL PRIMARY KEY,
-    nif VARCHAR(9) NOT NULL,
-    nombre VARCHAR(25) NOT NULL,
-    apellido1 VARCHAR(50) NOT NULL,
-    apellido2 VARCHAR(50),
-    ciudad VARCHAR
+-- Crear tabla alumno se matricula asignatura
+CREATE TABLE alumno_se_matricula_asignatura (
+    id_alumno INT NOT NULL,
+    id_asignatura INT NOT NULL,
+    id_curso_escolar INT NOT NULL,
+    PRIMARY KEY (id_alumno, id_asignatura, id_curso_escolar),
+    FOREIGN KEY (id_alumno) REFERENCES alumno(id),
+    FOREIGN KEY (id_asignatura) REFERENCES asignatura(id),
+    FOREIGN KEY (id_curso_escolar) REFERENCES curso_escolar(id)
+);
